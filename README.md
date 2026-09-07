@@ -146,6 +146,6 @@ GasPro/
 
 # 👨‍🎓 PARTICIPANTES
 
-**Matías Echeverría**
-**Jorge Zarate**
-**Enzo Morales**
+#**Matías Echeverría**
+#**Jorge Zarate**
+#**Enzo Morales**
