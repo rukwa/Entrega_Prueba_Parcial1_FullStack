@@ -1,6 +1,5 @@
 # ⛽ GasPro
 
-![GasPro](assets/images/home.png)
 
 Sistema de Tienda Online y Administración
 
