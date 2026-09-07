@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GasPro | Registro de usuario</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+<div id="site-header"></div>
+<main class="container my-5 d-flex justify-content-center">
+  <div class="col-md-7">
+    <div class="card card-form">
+      <div class="card-header text-center py-3">🔥 Registro de usuario</div>
+      <div class="card-body p-4">
+        <form id="formRegistro" novalidate>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">RUN (sin puntos ni guión)</label>
+              <input type="text" class="form-control" id="run" maxlength="9" placeholder="19011022K">
+              <div class="invalid-feedback"></div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Nombre</label>
+              <input type="text" class="form-control" id="nombre" maxlength="50">
+              <div class="invalid-feedback"></div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Apellidos</label>
+              <input type="text" class="form-control" id="apellidos" maxlength="100">
+              <div class="invalid-feedback"></div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Correo</label>
+              <input type="text" class="form-control" id="correo" maxlength="100">
+              <div class="invalid-feedback"></div>
+              <div class="form-text sugerencia">@duoc.cl, @profesor.duoc.cl o @gmail.com</div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Contraseña</label>
+              <input type="password" class="form-control" id="clave" maxlength="10">
+              <div class="invalid-feedback"></div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Confirmar contraseña</label>
+              <input type="password" class="form-control" id="clave2" maxlength="10">
+              <div class="invalid-feedback"></div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Fecha de nacimiento (opcional)</label>
+              <input type="date" class="form-control" id="fecha">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Región</label>
+              <select class="form-select" id="region"><option value="">-- Seleccione la región --</option></select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Comuna</label>
+              <select class="form-select" id="comuna"><option value="">-- Seleccione la comuna --</option></select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Dirección</label>
+              <input type="text" class="form-control" id="direccion" maxlength="300">
+              <div class="invalid-feedback"></div>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-accent w-100 mt-4">Registrar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</main>
+<div id="site-footer"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/components.js"></script>
+<script src="js/validations.js"></script>
+<script>
+  renderHeader('registro'); renderFooter();
+
+  const run=document.getElementById('run'), nombre=document.getElementById('nombre'),
+        apellidos=document.getElementById('apellidos'), correo=document.getElementById('correo'),
+        clave=document.getElementById('clave'), clave2=document.getElementById('clave2'),
+        direccion=document.getElementById('direccion'),
+        region=document.getElementById('region'), comuna=document.getElementById('comuna');
+
+  Object.keys(regiones).forEach(r => region.innerHTML += `<option value="${r}">${r}</option>`);
+  region.addEventListener('change', ()=>{
+    comuna.innerHTML = '<option value="">-- Seleccione la comuna --</option>';
+    (regiones[region.value]||[]).forEach(c => comuna.innerHTML += `<option value="${c}">${c}</option>`);
+  });
+
+  function valRun(){ if(!validarRut(run.value)){ marcarInvalido(run,'RUN inválido. Formato: 19011022K'); return false;} marcarValido(run); return true; }
+  function valNombre(){ if(nombre.value.trim()===''||nombre.value.length>50){ marcarInvalido(nombre,'Requerido, máximo 50 caracteres.'); return false;} marcarValido(nombre); return true; }
+  function valApellidos(){ if(apellidos.value.trim()===''||apellidos.value.length>100){ marcarInvalido(apellidos,'Requerido, máximo 100 caracteres.'); return false;} marcarValido(apellidos); return true; }
+  function valCorreo(){ if(!validarCorreo(correo.value)){ marcarInvalido(correo,'Correo inválido o dominio no permitido.'); return false;} marcarValido(correo); return true; }
+  function valClave(){ if(clave.value.length<4||clave.value.length>10){ marcarInvalido(clave,'Entre 4 y 10 caracteres.'); return false;} marcarValido(clave); return true; }
+  function valClave2(){ if(clave2.value!==clave.value||clave2.value===''){ marcarInvalido(clave2,'Las contraseñas no coinciden.'); return false;} marcarValido(clave2); return true; }
+  function valDireccion(){ if(direccion.value.trim()===''||direccion.value.length>300){ marcarInvalido(direccion,'Requerido, máximo 300 caracteres.'); return false;} marcarValido(direccion); return true; }
+
+  [[run,valRun],[nombre,valNombre],[apellidos,valApellidos],[correo,valCorreo],
+   [clave,valClave],[clave2,valClave2],[direccion,valDireccion]]
+   .forEach(([el,fn]) => el.addEventListener('input', fn));
+
+  document.getElementById('formRegistro').addEventListener('submit', function(e){
+    e.preventDefault();
+    const resultados = [valRun(),valNombre(),valApellidos(),valCorreo(),valClave(),valClave2(),valDireccion()];
+    if(!resultados.every(Boolean)) return;
+
+    if(buscarUsuarioPorRun(run.value.trim())){
+      marcarInvalido(run, 'Ya existe un usuario registrado con ese RUN.');
+      return;
+    }
+    if(buscarUsuarioPorCorreo(correo.value)){
+      marcarInvalido(correo, 'Ese correo ya está registrado. Intenta iniciar sesión.');
+      return;
+    }
+
+    const nuevoUsuario = {
+      run: run.value.trim(),
+      nombre: nombre.value.trim(),
+      apellidos: apellidos.value.trim(),
+      correo: correo.value.trim(),
+      clave: clave.value,
+      tipo: 'Cliente',
+      region: region.value,
+      comuna: comuna.value,
+      direccion: direccion.value.trim()
+    };
+    registrarUsuario(nuevoUsuario);
+    iniciarSesion(nuevoUsuario);
+    mostrarToast('¡Registro exitoso! Iniciando sesión...');
+    setTimeout(() => redirigirSegunTipo(nuevoUsuario.tipo), 900);
+  });
+</script>
+</body>
+</html>
